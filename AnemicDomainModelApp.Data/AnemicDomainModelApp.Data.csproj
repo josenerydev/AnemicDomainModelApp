@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200902142401_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902142401_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902145531_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902145531_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902150420_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902150420_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902150557_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902150557_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902150912_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902150912_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902152629_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902152629_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902153341_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902153341_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902153554_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902153554_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902160302_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902160302_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902160703_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902160703_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20200902161120_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200902161120_InitialCreate.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AnemicDomainModelApp.Domain\AnemicDomainModelApp.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
