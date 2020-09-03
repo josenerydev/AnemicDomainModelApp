@@ -30,16 +30,17 @@ namespace AnemicDomainModelApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var dto = new RegisterProductCommandDto
-            {
-                Description = "Arroz da Samiry",
-                NetWeight = 200M,
-                ProductStatusId = 1,
-                UnitId = 1
-            };
-
-            await _mediator.Send(new RegisterProductCommand(dto));
-
+            //var dto = new UpdateProductCommandDto(1, "Açucar Mascavo", 999M, 2, 3);
+            //var dto = new RegisterProductCommandDto("Café no bule", 10M, 1, 2);
+            //{
+            //    Id = 1,
+            //    Description = "Arroz da Nery",
+            //    NetWeight = 1000M,
+            //    ProductStatusId = 2,
+            //    UnitId = 4
+            //};
+            //var dto = new UpdatePackingCommandDto(1, 500M, 1, 1, 2);
+            var validationResult = await _mediator.Send(new DeletePackingCommand(1));
             return View();
         }
 

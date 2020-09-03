@@ -4,8 +4,12 @@ namespace AnemicDomainModelApp.Domain
 {
     public class PackingStatus
     {
-        public int Id { get; set; }
+        public PackingStatus(string value)
+        {
+            Value = value;
+        }
+        public int Id { get; private set; }
         public string Value { get; set; }
-        public virtual ICollection<Packing> Packaging { get; set; } = new List<Packing>();
+        public virtual ICollection<Packing> Packaging { get; private set; } = new List<Packing>();
     }
 }

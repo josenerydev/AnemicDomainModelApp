@@ -31,19 +31,19 @@ namespace AnemicDomainModelApp.Data
 
             // DATA SEEDING
 
-            modelBuilder.Entity<Unit>().HasData(new Unit { Id = 1, Value = "CX - Caixa" },
-                new Unit { Id = 2, Value = "KG - Quilograma" },
-                new Unit { Id = 3, Value = "L - Litro" },
-                new Unit { Id = 4, Value = "PC - Peça" },
-                new Unit { Id = 5, Value = "PCT - Pacote" },
-                new Unit { Id = 6, Value = "UN - Unidade" });
+            modelBuilder.Entity<Unit>().HasData(new { Id = 1, Value = "CX - Caixa" },
+                new { Id = 2, Value = "KG - Quilograma" },
+                new { Id = 3, Value = "L - Litro" },
+                new { Id = 4, Value = "PC - Peça" },
+                new { Id = 5, Value = "PCT - Pacote" },
+                new { Id = 6, Value = "UN - Unidade" });
 
-            modelBuilder.Entity<PackingStatus>().HasData(new PackingStatus { Id = 1, Value = "Ativo" },
-                new PackingStatus { Id = 2, Value = "Inativo" });
+            modelBuilder.Entity<PackingStatus>().HasData(new { Id = 1, Value = "Ativo" },
+                new { Id = 2, Value = "Inativo" });
 
-            modelBuilder.Entity<ProductStatus>().HasData(new ProductStatus { Id = 1, Value = "Ativo" },
-                new ProductStatus { Id = 2, Value = "Inativo" },
-                new ProductStatus { Id = 3, Value = "Bloqueado" });
+            modelBuilder.Entity<ProductStatus>().HasData(new { Id = 1, Value = "Ativo" },
+                new { Id = 2, Value = "Inativo" },
+                new { Id = 3, Value = "Bloqueado" });
         }
     }
 }

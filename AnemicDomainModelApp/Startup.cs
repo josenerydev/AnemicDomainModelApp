@@ -2,6 +2,7 @@ using AnemicDomainModelApp.Data;
 using AnemicDomainModelApp.Service.Commands;
 
 using FluentValidation.AspNetCore;
+using FluentValidation.Results;
 
 using MediatR;
 
@@ -34,8 +35,7 @@ namespace AnemicDomainModelApp
             services.AddControllersWithViews()
                 .AddFluentValidation(fv =>
                     fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient<IRequestHandler<RegisterProductCommand, Unit>, RegisterProductCommandHandler>();
+            services.AddMediatR(typeof(RegisterProductCommand));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

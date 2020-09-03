@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AnemicDomainModelApp.Data.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20200902224823_InitialCreate")]
+    [Migration("20200902233955_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
