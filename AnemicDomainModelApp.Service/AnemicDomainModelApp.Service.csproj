@@ -5,15 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.11.7" />
+    <PackageReference Include="FluentValidation" Version="9.2.0" />
     <PackageReference Include="MediatR" Version="8.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnemicDomainModelApp.Data\AnemicDomainModelApp.Data.csproj" />
+    <Folder Include="Query\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Query\" />
+    <ProjectReference Include="..\AnemicDomainModelApp.Domain\AnemicDomainModelApp.Domain.csproj" />
   </ItemGroup>
 
 </Project>

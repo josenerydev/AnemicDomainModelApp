@@ -1,45 +1,33 @@
-﻿using FluentValidation;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AnemicDomainModelApp.Domain
 {
-    public class Product
+    public class Product : Entity
     {
         protected Product()
         {
         }
 
-        public Product(string description, decimal netWeight, int productStatusId, int unitId)
+        public Product(Description description, NetWeight netWeight, ProductStatus productStatus, Unit unit)
         {
             Description = description;
             NetWeight = netWeight;
-            ProductStatusId = productStatusId;
-            UnitId = unitId;
+            ProductStatus = productStatus;
+            Unit = unit;
         }
 
-        public int Id { get; private set; }
-        public string Description { get; set; }
-        public decimal NetWeight { get; set; }
-        public int ProductStatusId { get; set; }
+        public Description Description { get; set; }
+        public NetWeight NetWeight { get; set; }
         public virtual ProductStatus ProductStatus { get; set; }
-        public int UnitId { get; set; }
         public virtual Unit Unit { get; set; }
-        public virtual ICollection<Packing> Packaging { get; set; } = new List<Packing>();
-    }
 
-    public class ProductValidator : AbstractValidator<Product>
-    {
-        public ProductValidator()
+        private readonly List<Packing> _packaging = new List<Packing>();
+        public virtual IReadOnlyCollection<Packing> Packaging => _packaging.ToList();
+
+        public void AddPacking(Packing packing)
         {
-            RuleFor(x => x.Description)
-                .NotEmpty();
-            RuleFor(x => x.NetWeight)
-                .NotEmpty();
-            RuleFor(x => x.ProductStatusId)
-                .NotEmpty();
-            RuleFor(x => x.UnitId)
-                .NotEmpty();
+            _packaging.Add(packing);
         }
     }
 }

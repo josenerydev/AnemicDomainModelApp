@@ -1,16 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using CSharpFunctionalExtensions;
+
+using System.Linq;
 
 namespace AnemicDomainModelApp.Domain
 {
-    public class Unit
+    public class Unit : Entity
     {
-        public Unit(string value)
+        public static readonly Unit Caixa = new Unit(1, "CX - Caixa");
+        public static readonly Unit Quilograma = new Unit(2, "KG - Quilograma");
+        public static readonly Unit Litro = new Unit(3, "L - Litro");
+        public static readonly Unit Peca = new Unit(4, "PC - Peça");
+        public static readonly Unit Pacote = new Unit(5, "PCT - Pacote");
+        public static readonly Unit Unidade = new Unit(6, "UN - Unidade");
+
+        public static readonly Unit[] AllUnits = { Caixa, Quilograma, Litro, Peca, Pacote, Unidade };
+
+        public string Name { get; }
+
+        protected Unit()
         {
-            Value = value;
         }
-        public int Id { get; private set; }
-        public string Value { get; set; }
-        public virtual ICollection<Product> Products { get; private set; } = new List<Product>();
-        public virtual ICollection<Packing> Packaging { get; private set; } = new List<Packing>();
+
+        private Unit(int id, string name)
+            : base(id)
+        {
+            Name = name;
+        }
+
+        public static Result<Unit> FromId(int id)
+        {
+            var unit = AllUnits.SingleOrDefault(x => x.Id == id);
+            if (unit == null)
+                return Result.Failure<Unit>("Unit not found");
+
+            return Result.Success(unit);
+        }
     }
 }

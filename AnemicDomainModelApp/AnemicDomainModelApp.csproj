@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnemicDomainModelApp.Data\AnemicDomainModelApp.Data.csproj" />
+    <ProjectReference Include="..\AnemicDomainModelApp.Domain\AnemicDomainModelApp.Domain.csproj" />
     <ProjectReference Include="..\AnemicDomainModelApp.Service\AnemicDomainModelApp.Service.csproj" />
   </ItemGroup>
 

@@ -1,19 +1,17 @@
-﻿using AnemicDomainModelApp.Data;
-using AnemicDomainModelApp.Domain;
-
-using FluentValidation.Results;
-
-using MediatR;
-
-using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
 
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
+using AnemicDomainModelApp.Domain;
+using Microsoft.EntityFrameworkCore;
+using CSharpFunctionalExtensions;
 
 namespace AnemicDomainModelApp.Service.Commands
 {
-    public class RegisterPackingCommand : IRequest<ValidationResult>
+    public class RegisterPackingCommand : IRequest<Result>
     {
         public RegisterPackingCommandDto CommandDto { get; }
 
@@ -23,48 +21,40 @@ namespace AnemicDomainModelApp.Service.Commands
         }
     }
 
-    public class RegisterPackingCommandHandler : IRequestHandler<RegisterPackingCommand, ValidationResult>
+    public class RegisterPackingCommandHandler : IRequestHandler<RegisterPackingCommand, Result>
     {
-        private readonly WmsContext _context;
+        private readonly ProductRepository _repository;
 
-        public RegisterPackingCommandHandler(WmsContext context)
+        public RegisterPackingCommandHandler(ProductRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        public async Task<ValidationResult> Handle(RegisterPackingCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RegisterPackingCommand command, CancellationToken cancellationToken)
         {
-            var validationFailures = new List<ValidationFailure>();
+            var productTask = _repository.GetById(command.CommandDto.ProductId);
 
-            var unit = await _context.Units.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.CommandDto.UnitId);
-            if (unit == null)
-                validationFailures.Add(new ValidationFailure("UnitId", "Unit not found"));
+            var convertionFactor = ConversionFactor.Create(command.CommandDto.ConvertionFactor);
+            if (convertionFactor.IsFailure)
+                return Result.Failure(convertionFactor.Error);
 
-            var packingStatus = await _context.PackagingStatus.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.CommandDto.PackingStatusId);
-            if (packingStatus == null)
-                validationFailures.Add(new ValidationFailure("PackingStatusId", "Packing not found"));
+            var unit = Domain.Unit.FromId(command.CommandDto.UnitId);
+            if (unit.IsFailure)
+                return Result.Failure(unit.Error);
 
-            var product = await _context.Products.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.CommandDto.ProductId);
-            if (product == null)
-                validationFailures.Add(new ValidationFailure("ProductId", "Packing not found"));
+            var packingStatus = PackingStatus.FromId(command.CommandDto.PackingStatusId);
+            if (packingStatus.IsFailure)
+                return Result.Failure(packingStatus.Error);
 
-            var packing = new Packing(command.CommandDto.ConvertionFactor,
-                unit.Id, packingStatus.Id, product.Id);
-            var validator = new PackingValidator();
-            var result = validator.Validate(packing);
-            if (!result.IsValid)
-                validationFailures.AddRange(result.Errors);
+            var product = await productTask;
+            if (product.IsFailure)
+                return Result.Failure(product.Error);
 
-            var validationResult = new ValidationResult(validationFailures);
-            if (!validationResult.IsValid)
-                return validationResult;
+            var packing = new Packing(convertionFactor.Value, unit.Value, packingStatus.Value, product.Value);
 
-            await _context.Packaging.AddAsync(packing);
-            await _context.SaveChangesAsync();
-            return validationResult;
+            product.Value.AddPacking(packing);
+
+            return Result.Success();
         }
     }
 }

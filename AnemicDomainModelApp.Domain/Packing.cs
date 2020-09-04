@@ -1,43 +1,21 @@
-﻿using FluentValidation;
-
-namespace AnemicDomainModelApp.Domain
+﻿namespace AnemicDomainModelApp.Domain
 {
-    public class Packing
+    public class Packing : Entity
     {
         protected Packing()
         {
         }
 
-        public Packing(decimal convertionFactor, int unitId, int packingStatusId, int productId)
+        public Packing(ConversionFactor convertionFactor, Unit unit, PackingStatus packingStatus, Product product)
         {
             ConvertionFactor = convertionFactor;
-            UnitId = unitId;
-            PackingStatusId = packingStatusId;
-            ProductId = productId;
+            Unit = unit;
+            PackingStatus = packingStatus;
+            Product = product;
         }
-
-        public int Id { get; private set; }
-        public decimal ConvertionFactor { get; set; }
-        public int UnitId { get; set; }
-        public virtual Unit Unit { get; set; }
-        public int PackingStatusId { get; set; }
-        public virtual PackingStatus PackingStatus { get; set; }
-        public int ProductId { get; set; }
-        public virtual Product Product { get; set; }
-    }
-
-    public class PackingValidator : AbstractValidator<Packing>
-    {
-        public PackingValidator()
-        {
-            RuleFor(x => x.ConvertionFactor)
-                .NotEmpty();
-            RuleFor(x => x.UnitId)
-                .NotEmpty();
-            RuleFor(x => x.PackingStatusId)
-                .NotEmpty();
-            RuleFor(x => x.ProductId)
-                .NotEmpty();
-        }
+        public ConversionFactor ConvertionFactor { get; }
+        public virtual Unit Unit { get; }
+        public virtual PackingStatus PackingStatus { get; }
+        public virtual Product Product { get; }
     }
 }

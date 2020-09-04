@@ -1,9 +1,7 @@
-﻿using AnemicDomainModelApp.Domain;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AnemicDomainModelApp.Data.Configurations
+namespace AnemicDomainModelApp.Domain
 {
     public class PackingEntityConfiguration : IEntityTypeConfiguration<Packing>
     {
@@ -13,24 +11,22 @@ namespace AnemicDomainModelApp.Data.Configurations
                 .HasKey(x => x.Id);
 
             builder.Property(x => x.ConvertionFactor)
+                .HasConversion(x => x.Value, x => ConversionFactor.Create(x).Value)
                 .HasColumnType("decimal(18,3)")
                 .IsRequired();
 
             builder.HasOne(x => x.Unit)
-                .WithMany(x => x.Packaging)
-                .HasForeignKey(x => x.UnitId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             builder.HasOne(x => x.PackingStatus)
-                .WithMany(x => x.Packaging)
-                .HasForeignKey(x => x.PackingStatusId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             builder.HasOne(x => x.Product)
                 .WithMany(x => x.Packaging)
-                .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
         }

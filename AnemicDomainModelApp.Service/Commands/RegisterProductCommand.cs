@@ -1,19 +1,15 @@
-﻿using AnemicDomainModelApp.Data;
-using AnemicDomainModelApp.Domain;
+﻿using AnemicDomainModelApp.Domain;
 
-using FluentValidation.Results;
+using CSharpFunctionalExtensions;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
-
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AnemicDomainModelApp.Service.Commands
 {
-    public class RegisterProductCommand : IRequest<ValidationResult>
+    public class RegisterProductCommand : IRequest<Result>
     {
         public RegisterProductCommandDto CommandDto { get; }
 
@@ -23,50 +19,39 @@ namespace AnemicDomainModelApp.Service.Commands
         }
     }
 
-    public class RegisterProductCommandHandler : IRequestHandler<RegisterProductCommand, ValidationResult>
+    public class RegisterProductCommandHandler : IRequestHandler<RegisterProductCommand, Result>
     {
-        private readonly WmsContext _context;
+        private readonly ProductRepository _repository;
 
-        public RegisterProductCommandHandler(WmsContext context)
+        public RegisterProductCommandHandler(ProductRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        public async Task<ValidationResult> Handle(RegisterProductCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RegisterProductCommand command, CancellationToken cancellationToken)
         {
-            var validationFailures = new List<ValidationFailure>();
+            var description = Description.Create(command.CommandDto.Description);
+            if (description.IsFailure)
+                return Result.Failure(description.Error);
 
-            var productStatus = await _context.ProductsStatus
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.CommandDto.ProductStatusId);
-            if (productStatus == null)
-                validationFailures.Add(new ValidationFailure("ProductStatusId", "Product Status not found"));
+            var netWeight = NetWeight.Create(command.CommandDto.NetWeight);
+            if (netWeight.IsFailure)
+                return Result.Failure(netWeight.Error);
 
-            var unit = await _context.Units
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.CommandDto.UnitId);
-            if (unit == null)
-                validationFailures.Add(new ValidationFailure("UnitId", "Unit not found"));
+            var productStatus = ProductStatus.FromId(command.CommandDto.ProductStatusId);
+            if (productStatus.IsFailure)
+                return Result.Failure(productStatus.Error);
 
-            var product = new Product(command.CommandDto.Description,
-                command.CommandDto.NetWeight,
-                command.CommandDto.ProductStatusId,
-                command.CommandDto.UnitId);
+            var unit = Domain.Unit.FromId(command.CommandDto.UnitId);
+            if (unit.IsFailure)
+                return Result.Failure(unit.Error);
 
-            var validator = new ProductValidator();
-            var result = validator.Validate(product);
-            if (!result.IsValid)
-                validationFailures.AddRange(result.Errors);
+            var product = new Product(description.Value,
+                netWeight.Value, productStatus.Value, unit.Value);
 
+            _repository.Save(product);
 
-            var validationResult = new ValidationResult(validationFailures);
-            if (!validationResult.IsValid)
-                return validationResult;
-
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
-
-            return validationResult;
+            return Result.Success();
         }
     }
 }

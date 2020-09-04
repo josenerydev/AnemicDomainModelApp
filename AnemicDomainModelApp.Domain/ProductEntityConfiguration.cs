@@ -1,9 +1,7 @@
-﻿using AnemicDomainModelApp.Domain;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AnemicDomainModelApp.Data.Configurations
+namespace AnemicDomainModelApp.Domain
 {
     public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
     {
@@ -13,28 +11,29 @@ namespace AnemicDomainModelApp.Data.Configurations
                 .HasKey(x => x.Id);
 
             builder.Property(x => x.Description)
+                .HasConversion(x => x.Value, x => Description.Create(x).Value)
                 .IsRequired();
+
             builder.Property(x => x.NetWeight)
+                .HasConversion(x => x.Value, x => NetWeight.Create(x).Value)
                 .HasColumnType("decimal(18,3)")
                 .IsRequired();
 
             builder.HasOne(x => x.Unit)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.UnitId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             builder.HasOne(x => x.ProductStatus)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.ProductStatusId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             builder.HasMany(x => x.Packaging)
                 .WithOne(x => x.Product)
-                .HasForeignKey(x => x.ProductId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired()
+                .Metadata.PrincipalToDependent.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

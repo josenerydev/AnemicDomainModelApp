@@ -1,10 +1,8 @@
-﻿using AnemicDomainModelApp.Domain;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using System.Reflection;
 
-namespace AnemicDomainModelApp.Data
+namespace AnemicDomainModelApp.Domain
 {
     public class WmsContext : DbContext
     {
@@ -31,19 +29,11 @@ namespace AnemicDomainModelApp.Data
 
             // DATA SEEDING
 
-            modelBuilder.Entity<Unit>().HasData(new { Id = 1, Value = "CX - Caixa" },
-                new { Id = 2, Value = "KG - Quilograma" },
-                new { Id = 3, Value = "L - Litro" },
-                new { Id = 4, Value = "PC - Peça" },
-                new { Id = 5, Value = "PCT - Pacote" },
-                new { Id = 6, Value = "UN - Unidade" });
+            modelBuilder.Entity<Unit>().HasData(Unit.AllUnits);
 
-            modelBuilder.Entity<PackingStatus>().HasData(new { Id = 1, Value = "Ativo" },
-                new { Id = 2, Value = "Inativo" });
+            modelBuilder.Entity<PackingStatus>().HasData(PackingStatus.AllPackingStatus);
 
-            modelBuilder.Entity<ProductStatus>().HasData(new { Id = 1, Value = "Ativo" },
-                new { Id = 2, Value = "Inativo" },
-                new { Id = 3, Value = "Bloqueado" });
+            modelBuilder.Entity<ProductStatus>().HasData(ProductStatus.AllProductStatus);
         }
     }
 }
