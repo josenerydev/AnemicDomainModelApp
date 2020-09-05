@@ -11,7 +11,7 @@ using CSharpFunctionalExtensions;
 
 namespace AnemicDomainModelApp.Service.Commands
 {
-    public class RegisterPackingCommand : IRequest<Result>
+    public class RegisterPackingCommand : IRequest<ValidationResult>
     {
         public RegisterPackingCommandDto CommandDto { get; }
 
@@ -21,7 +21,7 @@ namespace AnemicDomainModelApp.Service.Commands
         }
     }
 
-    public class RegisterPackingCommandHandler : IRequestHandler<RegisterPackingCommand, Result>
+    public class RegisterPackingCommandHandler : IRequestHandler<RegisterPackingCommand, ValidationResult>
     {
         private readonly ProductRepository _repository;
 
@@ -30,31 +30,38 @@ namespace AnemicDomainModelApp.Service.Commands
             _repository = repository;
         }
 
-        public async Task<Result> Handle(RegisterPackingCommand command, CancellationToken cancellationToken)
+        public async Task<ValidationResult> Handle(RegisterPackingCommand command, CancellationToken cancellationToken)
         {
-            var productTask = _repository.GetById(command.CommandDto.ProductId);
+            List<ValidationFailure> validationFailures = new List<ValidationFailure>();
 
+            var getProductById = _repository.GetById(command.CommandDto.ProductId);
+
+            List<Result> result = new List<Result>();
             var convertionFactor = ConversionFactor.Create(command.CommandDto.ConvertionFactor);
             if (convertionFactor.IsFailure)
-                return Result.Failure(convertionFactor.Error);
+                validationFailures.Add(new ValidationFailure(nameof(ConversionFactor), convertionFactor.Error));
 
             var unit = Domain.Unit.FromId(command.CommandDto.UnitId);
             if (unit.IsFailure)
-                return Result.Failure(unit.Error);
+                validationFailures.Add(new ValidationFailure(nameof(Domain.Unit), unit.Error));
 
             var packingStatus = PackingStatus.FromId(command.CommandDto.PackingStatusId);
             if (packingStatus.IsFailure)
-                return Result.Failure(packingStatus.Error);
+                validationFailures.Add(new ValidationFailure(nameof(PackingStatus), packingStatus.Error));
 
-            var product = await productTask;
+            var product = await getProductById;
             if (product.IsFailure)
-                return Result.Failure(product.Error);
+                validationFailures.Add(new ValidationFailure(nameof(Product), product.Error));
+
+            var validationResult = new ValidationResult(validationFailures);
+            if (!validationResult.IsValid)
+                return validationResult;
 
             var packing = new Packing(convertionFactor.Value, unit.Value, packingStatus.Value, product.Value);
 
             product.Value.AddPacking(packing);
 
-            return Result.Success();
+            return validationResult;
         }
     }
 }

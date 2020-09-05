@@ -28,10 +28,10 @@ namespace AnemicDomainModelApp.Controllers
         {
             //var registerProductCommandDto = new RegisterProductCommandDto("Café", 100M, 1, 1);
             //var result = await _mediator.Send(new RegisterProductCommand(registerProductCommandDto));
-            var registerPackingCommandDto = new RegisterPackingCommandDto(20M, 4, 2, 1);
-            await _mediator.Send(new RegisterPackingCommand(registerPackingCommandDto));
+            var registerPackingCommandDto = new RegisterPackingCommandDto(0, 0, 0, 0);
+            var validationResult = await _mediator.Send(new RegisterPackingCommand(registerPackingCommandDto));
 
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return View();
         }
 
