@@ -1,10 +1,12 @@
-﻿using CSharpFunctionalExtensions;
+﻿using AnemicDomainModelApp.Domain.Common;
+
+using CSharpFunctionalExtensions;
 
 using System.Threading.Tasks;
 
 namespace AnemicDomainModelApp.Domain
 {
-    public sealed class ProductRepository
+    public sealed class ProductRepository : IRepository<Product>
     {
         private readonly WmsContext _context;
 

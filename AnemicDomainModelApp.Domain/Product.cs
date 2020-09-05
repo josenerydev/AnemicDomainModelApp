@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using AnemicDomainModelApp.Domain.Common;
+
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AnemicDomainModelApp.Domain
 {
-    public class Product : Entity
+    public class Product : AggregateRoot
     {
         protected Product()
         {

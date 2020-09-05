@@ -30,12 +30,11 @@ namespace AnemicDomainModelApp
         {
             services.AddDbContext<WmsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("WmsConnectionString"))
-                    .EnableSensitiveDataLogging());
+                    .EnableSensitiveDataLogging(), ServiceLifetime.Transient);
             services.AddControllersWithViews()
                 .AddFluentValidation(fv =>
                     fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
-            services.AddMediatR(typeof(RegisterProductCommand));
-            services.AddTransient<ProductRepository>();
+            services.AddMediatR(typeof(RegisterPackingCommand));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

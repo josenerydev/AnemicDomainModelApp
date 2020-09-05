@@ -1,15 +1,16 @@
 ﻿using AnemicDomainModelApp.Domain;
 
-using CSharpFunctionalExtensions;
+using FluentValidation.Results;
 
 using MediatR;
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AnemicDomainModelApp.Service.Commands
 {
-    public class RegisterProductCommand : IRequest<Result>
+    public sealed class RegisterProductCommand : IRequest<ValidationResult>
     {
         public RegisterProductCommandDto CommandDto { get; }
 
@@ -17,41 +18,49 @@ namespace AnemicDomainModelApp.Service.Commands
         {
             CommandDto = commandDto;
         }
-    }
 
-    public class RegisterProductCommandHandler : IRequestHandler<RegisterProductCommand, Result>
-    {
-        private readonly ProductRepository _repository;
-
-        public RegisterProductCommandHandler(ProductRepository repository)
+        internal sealed class RegisterProductCommandHandler : IRequestHandler<RegisterProductCommand, ValidationResult>
         {
-            _repository = repository;
-        }
+            private readonly WmsContext _context;
 
-        public async Task<Result> Handle(RegisterProductCommand command, CancellationToken cancellationToken)
-        {
-            var description = Description.Create(command.CommandDto.Description);
-            if (description.IsFailure)
-                return Result.Failure(description.Error);
+            public RegisterProductCommandHandler(WmsContext context)
+            {
+                _context = context;
+            }
 
-            var netWeight = NetWeight.Create(command.CommandDto.NetWeight);
-            if (netWeight.IsFailure)
-                return Result.Failure(netWeight.Error);
+            public async Task<ValidationResult> Handle(RegisterProductCommand command, CancellationToken cancellationToken)
+            {
+                List<ValidationFailure> validationFailures = new List<ValidationFailure>();
 
-            var productStatus = ProductStatus.FromId(command.CommandDto.ProductStatusId);
-            if (productStatus.IsFailure)
-                return Result.Failure(productStatus.Error);
+                var description = Description.Create(command.CommandDto.Description);
+                if (description.IsFailure)
+                    validationFailures.Add(new ValidationFailure(nameof(Description), description.Error));
 
-            var unit = Domain.Unit.FromId(command.CommandDto.UnitId);
-            if (unit.IsFailure)
-                return Result.Failure(unit.Error);
+                var netWeight = NetWeight.Create(command.CommandDto.NetWeight);
+                if (netWeight.IsFailure)
+                    validationFailures.Add(new ValidationFailure(nameof(netWeight), netWeight.Error));
 
-            var product = new Product(description.Value,
-                netWeight.Value, productStatus.Value, unit.Value);
+                var productStatus = ProductStatus.FromId(command.CommandDto.ProductStatusId);
+                if (productStatus.IsFailure)
+                    validationFailures.Add(new ValidationFailure(nameof(productStatus), productStatus.Error));
 
-            _repository.Save(product);
+                var unit = Domain.Unit.FromId(command.CommandDto.UnitId);
+                if (unit.IsFailure)
+                    validationFailures.Add(new ValidationFailure(nameof(Domain.Unit), unit.Error));
 
-            return Result.Success();
+                var validationResult = new ValidationResult(validationFailures);
+                if (!validationResult.IsValid)
+                    return validationResult;
+
+                var product = new Product(description.Value,
+                    netWeight.Value, productStatus.Value, unit.Value);
+
+                var productRepository = new ProductRepository(_context);
+                productRepository.Save(product);
+
+                await _context.SaveChangesAsync();
+                return validationResult;
+            }
         }
     }
 }

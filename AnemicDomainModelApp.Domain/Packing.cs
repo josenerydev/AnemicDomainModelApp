@@ -1,4 +1,6 @@
-﻿namespace AnemicDomainModelApp.Domain
+﻿using AnemicDomainModelApp.Domain.Common;
+
+namespace AnemicDomainModelApp.Domain
 {
     public class Packing : Entity
     {

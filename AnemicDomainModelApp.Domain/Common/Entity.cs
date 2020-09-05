@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnemicDomainModelApp.Domain
+namespace AnemicDomainModelApp.Domain.Common
 {
     public abstract class Entity
     {
