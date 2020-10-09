@@ -1,5 +1,4 @@
-﻿using AnemicDomainModelApp.Data;
-using AnemicDomainModelApp.Domain;
+﻿using AnemicDomainModelApp.Domain;
 
 using FluentValidation.Results;
 
